@@ -41,14 +41,27 @@ then
    dnf install mysql-server -y &>>$LOG_FILE
    VALIDATE $? "Installing mysql"
 else
-   echo -e "MySql is already intalled %Y skipping %N" | tee -a $LOG_FILE
+   echo -e "$G MySql is already intalled $N skipping %N" | tee -a $LOG_FILE
+fi
+STARTED=$(systemctl is-active mysqld)
+if [ $STARTED != 'active' ]
+then 
+    echo "Mysql is not started, going to start" | tee -a $LOG_FILE
+    systemctl start mysqld &>>$LOG_FILE
+    VALIDATE $? "starting mysql"
+else
+    echo -e " $G MySql is already started skipping $N" | tee -a $LOG_FILE   
 fi
 
-systemctl enable mysqld &>>$LOG_FILE
-VALIDATE $? "enabling mysql"
-
-systemctl start mysqld &>>$LOG_FILE
-VALIDATE $? "started mysql server"
+ENABLED=$(systemctl is-enabled mysqld)
+if [ $ENABLED != 'enabled' ]
+then 
+    echo "Mysql is not enabled, going to enable" | tee -a $LOG_FILE
+    systemctl enable mysqld &>>$LOG_FILE
+    VALIDATE $? "enabling mysql"
+else
+    echo "MySql is already enabled skipping" | tee -a $LOG_FILE   
+fi
 
 
 mysql_secure_installation --set-root-pass ExpenseApp@1 -e 'show databases;' &>>$LOG_FILE
