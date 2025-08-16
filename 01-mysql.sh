@@ -12,10 +12,13 @@ echo "UserID is $USERID"
 
 R="\e[31m"
 G="\e[32m"
+N="\e[0m"
+Y="\e[33m"
+
 CHECK_ROOT(){
 if [ $USERID -ne 0 ]
 then
-   echo -e "$R Please run the script with root privileges $N" | tee -a &>>$LOG_FILE
+   echo -e "$R Please run the script with root privileges $N" | tee -a $LOG_FILE
    exit 1
 fi
 
@@ -23,9 +26,9 @@ fi
 VALIDATE (){
     if [ $1 -ne 0 ]
     then 
-        echo -e "$2 is $R Failed $N" | tee -a &>>$LOG_FILE
+        echo -e "$2 is $R Failed $N" | tee -a $LOG_FILE
     else
-        echo -e "$2 is $G Success $N" | tee -a &>>$LOG_FILE
+        echo -e "$2 is $G Success $N" | tee -a $LOG_FILE
     fi        
 }
 
@@ -42,5 +45,12 @@ systemctl start mysqld &>>$LOG_FILE
 VALIDATE $? "started mysql server"
 
 
-mysql_secure_installation --set-root-pass ExpenseApp@1 &>>$LOG_FILE
-VALIDATE $? "SETTING UP ROOT PASSWORD"
+mysql_secure_installation --set-root-pass ExpenseApp@1 -e 'show databases;' &>>$LOG_FILE
+if [ $? -ne 0 ]
+then
+    echo "Mysql Password is not set , setting now" &>>$LOG_FILE
+    mysql_secure_installation --set-root-pass ExpenseApp@1
+    VALIDATE $? "SETTING UP ROOT PASSWORD"
+else
+    echo -e "Mysql root password is already setup $Y skipping $N" | tee -a $LOG_FILE
+fi
