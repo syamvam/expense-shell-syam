@@ -34,9 +34,15 @@ VALIDATE (){
 
 echo "Scripts started executing at : $(date)" | tee -a $LOG_FILE
 CHECK_ROOT
-
-dnf install mysql-server -y &>>$LOG_FILE
-VALIDATE $? "Installing mysql"
+dnf installed list mysql
+if [ $? -ne 0 ]
+then 
+   echo "MySql is not installed, going to install" | tee -a $LOG_FILE
+   dnf install mysql-server -y &>>$LOG_FILE
+   VALIDATE $? "Installing mysql"
+else
+   echo -e "MySql is already intalled %Y skipping %N" | tee -a $LOG_FILE
+fi
 
 systemctl enable mysqld &>>$LOG_FILE
 VALIDATE $? "enabling mysql"
@@ -54,3 +60,5 @@ then
 else
     echo -e "Mysql root password is already setup $Y skipping $N" | tee -a $LOG_FILE
 fi
+
+
