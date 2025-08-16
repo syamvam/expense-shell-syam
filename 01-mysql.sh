@@ -34,7 +34,7 @@ VALIDATE (){
 
 echo "Scripts started executing at : $(date)" | tee -a $LOG_FILE
 CHECK_ROOT
-dnf installed list mysql
+dnf list installed mysql
 if [ $? -ne 0 ]
 then 
    echo "MySql is not installed, going to install" | tee -a $LOG_FILE
