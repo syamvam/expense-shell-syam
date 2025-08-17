@@ -61,6 +61,6 @@ VALIDATE $? "Downloading backend applicationcode"
 
 cd /app
 VALIDATE $? "Moving to app folder"
-
+rm -rf /app/* #remove the existing code
 unzip /tmp/backend.zip 
 VALIDATE $? "Extracting backend zip"
