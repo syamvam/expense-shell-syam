@@ -35,14 +35,14 @@ VALIDATE (){
 echo "Scripts started executing at : $(date)" | tee -a $LOG_FILE
 CHECK_ROOT
 
-dnf module disable nodejs -y
+dnf module disable nodejs -y &>>$LOG_FILE
 VALIDATE $? "Disabling nodejs"
 
-dnf module enable nodejs:20 -y
+dnf module enable nodejs:20 -y &>>$LOG_FILE
 VALIDATE $? "Enabling nodejs"
 
-dnf install nodejs -y
+dnf install nodejs -y &>>$LOG_FILE
 VALIDATE $? "Installing nodejs"
 
-useradd expense
+useradd expense &>>$LOG_FILE
 VALIDATE $? "Creating user expense"
