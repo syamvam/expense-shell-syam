@@ -56,11 +56,31 @@ fi
 mkdir -p /app
 VALIDATE $? "Creating app folder"
 
-curl -o /tmp/backend.zip https://expense-builds.s3.us-east-1.amazonaws.com/expense-backend-v2.zip $>>$LOG_FILE
-VALIDATE $? "Downloading backend applicationcode"
+curl -o /tmp/backend.zip https://expense-builds.s3.us-east-1.amazonaws.com/expense-backend-v2.zip &>>$LOG_FILE
+VALIDATE $? "Downloading backend application code"
 
 cd /app
-VALIDATE $? "Moving to app folder"
 rm -rf /app/* #remove the existing code
-unzip /tmp/backend.zip 
+unzip /tmp/backend.zip &>>$LOG_FILE
 VALIDATE $? "Extracting backend zip"
+
+npm install &>>$LOG_FILE
+
+cp /home/ec2-user/expense-shell-syam  /etc/systemd/system/backend.service
+
+#Load the data before running backend
+
+dnf install mysql -y &>>$LOG_FILE
+VALIDATE $? "Installing MySql Client"
+
+mysql -h mysql.devops-syam.online  -uroot -pExpenseApp@1 < /app/schema/backend.sql
+VALIDATE $? "Schema Loading"
+
+systemctl daemon-reload
+VALIDATE $? "Daemon Reload"
+
+systemctl enable backend
+VALIDATE $? "ENabled Backend"
+
+systemctl start backend
+VALIDATE $? "Started backend"
