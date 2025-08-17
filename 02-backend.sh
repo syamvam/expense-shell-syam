@@ -44,7 +44,7 @@ VALIDATE $? "Enabling nodejs"
 dnf install nodejs -y &>>$LOG_FILE
 VALIDATE $? "Installing nodejs"
 
-id expance &>>$LOG_FILE
+id expence &>>$LOG_FILE
 if [ $? -ne 0 ]
 then
     echo "expense user is not existing creating user"
