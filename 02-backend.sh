@@ -66,7 +66,7 @@ VALIDATE $? "Extracting backend zip"
 
 npm install &>>$LOG_FILE
 
-cp /home/ec2-user/expense-shell-syam  /etc/systemd/system/backend.service
+cp /home/ec2-user/expense-shell-syam/backend.service  /etc/systemd/system/backend.service
 
 #Load the data before running backend
 
@@ -79,8 +79,8 @@ VALIDATE $? "Schema Loading"
 systemctl daemon-reload
 VALIDATE $? "Daemon Reload"
 
-systemctl enable backend
+systemctl enable backend &>>$LOG_FILE
 VALIDATE $? "ENabled Backend"
 
-systemctl start backend
+systemctl restart backend &>>$LOG_FILE
 VALIDATE $? "Started backend"
